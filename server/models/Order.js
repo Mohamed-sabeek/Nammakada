@@ -25,12 +25,12 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ["cod", "online"],
-        default: "cod"
+        enum: ["COD", "ONLINE"],
+        default: "COD"
     },
     paymentStatus: {
         type: String,
-        enum: ["pending", "paid", "failed"],
+        enum: ["pending", "paid", "failed", "refunded"],
         default: "pending"
     },
     orderStatus: {

@@ -289,7 +289,7 @@ const AdminOrdersPage = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-bold text-gray-900 uppercase">{order.paymentMethod === 'cod' ? 'COD' : order.paymentMethod}</span>
+                                            <span className="text-sm font-bold text-gray-900 uppercase">{order.paymentMethod}</span>
                                             <span className={`text-[10px] font-black uppercase tracking-wider ${order.paymentStatus === 'paid' ? 'text-green-500' : 'text-amber-500'}`}>
                                                 {order.paymentStatus}
                                             </span>
@@ -348,7 +348,7 @@ const AdminOrdersPage = () => {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold uppercase text-gray-600 border border-gray-200 px-2 py-1 rounded bg-white">{order.paymentMethod === 'cod' ? 'COD' : order.paymentMethod}</span>
+                                        <span className="text-xs font-bold uppercase text-gray-600 border border-gray-200 px-2 py-1 rounded bg-white">{order.paymentMethod}</span>
                                         <span className={`text-[10px] font-black uppercase tracking-wider ${order.paymentStatus === 'paid' ? 'text-green-500' : 'text-amber-500'}`}>
                                             {order.paymentStatus}
                                         </span>

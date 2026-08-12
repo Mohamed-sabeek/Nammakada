@@ -291,6 +291,9 @@ const OrdersPage = () => {
                                         <span className={`px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider ${STATUS_COLORS[order.orderStatus]}`}>
                                             {order.orderStatus === 'cancelled' ? '✕ Cancelled' : order.orderStatus === 'delivered' ? '✓ Delivered' : order.orderStatus.replace(/_/g, ' ')}
                                         </span>
+                                        <span className="px-2 py-1 rounded bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider border border-gray-200">
+                                            {order.paymentMethod}
+                                        </span>
                                     </div>
                                     <p className="text-sm text-gray-500">
                                         Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}

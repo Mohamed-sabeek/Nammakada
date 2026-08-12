@@ -13,10 +13,14 @@ exports.createOrder = async (req, res) => {
     session.startTransaction();
 
     try {
-        const { deliveryAddress, paymentMethod = 'cod' } = req.body;
+        const { deliveryAddress, paymentMethod = 'COD' } = req.body;
 
         if (!deliveryAddress) {
             return res.status(400).json({ success: false, message: "Delivery address is required" });
+        }
+
+        if (paymentMethod !== 'COD' && paymentMethod !== 'ONLINE') {
+            return res.status(400).json({ success: false, message: "Invalid payment method" });
         }
 
         // Retrieve Cart
@@ -83,7 +87,7 @@ exports.createOrder = async (req, res) => {
             totalAmount,
             deliveryAddress,
             paymentMethod,
-            paymentStatus: paymentMethod === 'cod' ? 'pending' : 'paid',
+            paymentStatus: 'pending',
             orderStatus: 'pending'
         });
 
@@ -454,7 +458,7 @@ exports.adminUpdateOrderStatus = async (req, res) => {
             updateData.orderStatus = orderStatus;
 
             // Auto-update COD to paid if delivered
-            if (orderStatus === 'delivered' && oldOrder.paymentMethod === 'cod') {
+            if (orderStatus === 'delivered' && oldOrder.paymentMethod === 'COD') {
                 updateData.paymentStatus = 'paid';
             }
         }

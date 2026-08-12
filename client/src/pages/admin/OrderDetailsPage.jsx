@@ -190,8 +190,8 @@ const AdminOrderDetailsPage = () => {
                         <div className="space-y-6">
                             <div>
                                 <p className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Method</p>
-                                <div className="inline-block px-3 py-1 bg-gray-100 rounded-lg text-sm font-bold text-gray-700 uppercase">
-                                    {order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod}
+                                <div className="inline-block px-3 py-1 bg-gray-100 rounded-lg text-sm font-bold text-gray-700">
+                                    {order.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Payment'}
                                 </div>
                             </div>
                             <div>

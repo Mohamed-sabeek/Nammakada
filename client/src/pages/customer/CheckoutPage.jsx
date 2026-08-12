@@ -13,6 +13,7 @@ const CheckoutPage = () => {
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [orderSuccessData, setOrderSuccessData] = useState(null);
     const [error, setError] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('COD');
     const [formData, setFormData] = useState({
         fullName: user?.name || '',
         phone: user?.phone || '',
@@ -34,11 +35,17 @@ const CheckoutPage = () => {
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (paymentMethod === 'ONLINE') {
+            alert('Online payment will be available soon.');
+            return;
+        }
+
         setIsPlacingOrder(true);
         try {
             const { data } = await api.post('/orders', {
                 deliveryAddress: formData,
-                paymentMethod: 'cod'
+                paymentMethod: paymentMethod
             });
             await clearCart();
             // Show Success Animation
@@ -77,7 +84,7 @@ const CheckoutPage = () => {
                         <div className="flex justify-between items-center">
                             <span className="text-gray-500 text-sm">Payment Method</span>
                             <span className="font-bold text-gray-900">
-                                {orderSuccessData.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online'}
+                                {orderSuccessData.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Payment'}
                             </span>
                         </div>
                         <div className="flex justify-between items-center">
@@ -163,13 +170,30 @@ const CheckoutPage = () => {
                             <ShieldCheck size={24} className="text-primary" weight="fill" />
                             <h2 className="text-xl font-bold text-gray-900">Payment Method</h2>
                         </div>
-                        <label className="flex items-center gap-4 p-4 border-2 border-primary rounded-xl cursor-pointer bg-primary-light">
-                            <input type="radio" name="payment" value="cod" defaultChecked className="w-5 h-5 text-primary focus:ring-primary" />
-                            <div className="flex flex-col">
-                                <span className="font-bold text-gray-900 text-lg">Cash on Delivery</span>
-                                <span className="text-sm text-gray-600">Pay when you receive the order</span>
-                            </div>
-                        </label>
+                        <div className="space-y-4">
+                            <label className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-colors ${paymentMethod === 'COD' ? 'border-primary bg-primary-light' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
+                                <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="w-5 h-5 text-primary focus:ring-primary" />
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-gray-900 text-lg">Cash on Delivery</span>
+                                    <span className="text-sm text-gray-600">Pay when your order is delivered</span>
+                                </div>
+                            </label>
+                            
+                            <label className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-colors ${paymentMethod === 'ONLINE' ? 'border-primary bg-primary-light' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
+                                <input type="radio" name="payment" value="ONLINE" checked={paymentMethod === 'ONLINE'} onChange={() => setPaymentMethod('ONLINE')} className="w-5 h-5 text-primary focus:ring-primary" />
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-gray-900 text-lg">Online Payment</span>
+                                    <span className="text-sm text-gray-600">Pay securely using UPI, Card or other available online payment methods</span>
+                                </div>
+                            </label>
+
+                            {paymentMethod === 'ONLINE' && (
+                                <div className="mt-4 p-4 bg-blue-50 text-blue-700 rounded-xl text-sm border border-blue-100 flex items-start gap-2">
+                                    <ShieldCheck size={20} weight="fill" className="shrink-0 mt-0.5" />
+                                    <span>Secure online payment will be available through our payment gateway.</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -217,7 +241,7 @@ const CheckoutPage = () => {
                             {isPlacingOrder ? (
                                 <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             ) : (
-                                <>Place Order <CheckCircle size={20} weight="bold" /></>
+                                <>{paymentMethod === 'ONLINE' ? 'Continue to Payment' : 'Place Order'} <CheckCircle size={20} weight="bold" /></>
                             )}
                         </button>
                         
