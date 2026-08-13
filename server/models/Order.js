@@ -44,6 +44,12 @@ const orderSchema = new mongoose.Schema({
             "cancelled"
         ],
         default: "pending"
+    },
+    razorpayOrderId: {
+        type: String
+    },
+    razorpayPaymentId: {
+        type: String
     }
 }, { timestamps: true });
 

@@ -6,6 +6,7 @@ NammaKada is a comprehensive e-commerce platform built with the MERN stack (Mong
 
 - **Customer Portal**: Browse products, manage cart, checkout, view order history and track order status.
 - **Admin Portal**: Manage products, categories, orders, customers, and view business analytics.
+- **Payment Gateway**: Integrated Razorpay for secure online payments, alongside Cash on Delivery (COD).
 - **Real-time Notifications**: Custom built notification system for both customers and admins.
 - **Responsive Design**: Mobile-friendly, beautiful user interface with modern micro-animations and layouts.
 - **Authentication**: JWT-based secure authentication for customers and administrators.
@@ -16,6 +17,7 @@ NammaKada is a comprehensive e-commerce platform built with the MERN stack (Mong
 - **Backend**: Node.js, Express, MongoDB (Mongoose)
 - **Authentication**: JSON Web Tokens (JWT)
 - **Image Storage**: Cloudinary
+- **Payments**: Razorpay
 
 ## Getting Started
 

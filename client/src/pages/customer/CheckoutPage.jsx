@@ -37,10 +37,71 @@ const CheckoutPage = () => {
         setError('');
 
         if (paymentMethod === 'ONLINE') {
-            alert('Online payment will be available soon.');
+            setIsPlacingOrder(true);
+            try {
+                // 1. Create Razorpay order
+                const { data } = await api.post('/payments/razorpay/create-order', {
+                    deliveryAddress: formData
+                });
+                
+                const { razorpayOrderId, amount, currency, keyId } = data.data;
+
+                // 2. Open Razorpay Checkout
+                const options = {
+                    key: keyId,
+                    amount: amount,
+                    currency: currency,
+                    name: 'NammaKada',
+                    description: 'NammaKada Order Payment',
+                    order_id: razorpayOrderId,
+                    prefill: {
+                        name: formData.fullName,
+                        contact: formData.phone
+                    },
+                    theme: {
+                        color: '#00C32C'
+                    },
+                    handler: async function (response) {
+                        // 3. Verify Payment
+                        try {
+                            const verifyRes = await api.post('/payments/razorpay/verify', {
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                                deliveryAddress: formData
+                            });
+                            
+                            await clearCart();
+                            setOrderSuccessData(verifyRes.data.data);
+                        } catch (err) {
+                            setError(err.response?.data?.message || 'Payment verification failed. Please contact support.');
+                        } finally {
+                            setIsPlacingOrder(false);
+                        }
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            setError('Payment was cancelled. You can try again.');
+                            setIsPlacingOrder(false);
+                        }
+                    }
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.on('payment.failed', function (response) {
+                    setError('Payment failed. Please try again.');
+                    setIsPlacingOrder(false);
+                });
+                rzp.open();
+                
+            } catch (err) {
+                setError(err.response?.data?.message || 'Failed to initiate online payment');
+                setIsPlacingOrder(false);
+            }
             return;
         }
 
+        // COD Flow
         setIsPlacingOrder(true);
         try {
             const { data } = await api.post('/orders', {
@@ -48,7 +109,6 @@ const CheckoutPage = () => {
                 paymentMethod: paymentMethod
             });
             await clearCart();
-            // Show Success Animation
             setOrderSuccessData(data.data);
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to place order');
@@ -241,7 +301,7 @@ const CheckoutPage = () => {
                             {isPlacingOrder ? (
                                 <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             ) : (
-                                <>{paymentMethod === 'ONLINE' ? 'Continue to Payment' : 'Place Order'} <CheckCircle size={20} weight="bold" /></>
+                                <>{paymentMethod === 'ONLINE' ? `Pay ₹${total} Online` : 'Place Order'} <CheckCircle size={20} weight="bold" /></>
                             )}
                         </button>
                         

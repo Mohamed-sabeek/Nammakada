@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, WarningCircle, Truck, Package, Clock, CaretDown, Receipt, FileText } from '@phosphor-icons/react';
+import { ArrowLeft, Check, CheckCircle, WarningCircle, Truck, Package, Clock, CaretDown, Receipt, FileText } from '@phosphor-icons/react';
 import api from '../../services/api';
 import CustomSelect from '../../components/ui/CustomSelect';
 import PageHeader from '../../components/ui/PageHeader';
@@ -221,6 +221,23 @@ const AdminOrderDetailsPage = () => {
                                     </button>
                                 </div>
                             </div>
+                            
+                            {order.paymentMethod === 'ONLINE' && (
+                                <div className="space-y-4 pt-4 border-t border-gray-100">
+                                    {order.razorpayPaymentId && (
+                                        <div>
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Razorpay Payment ID</p>
+                                            <p className="text-sm font-medium text-gray-900 break-all">{order.razorpayPaymentId}</p>
+                                        </div>
+                                    )}
+                                    {order.razorpayOrderId && (
+                                        <div>
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Razorpay Order ID</p>
+                                            <p className="text-sm font-medium text-gray-900 break-all">{order.razorpayOrderId}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
