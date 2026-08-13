@@ -438,23 +438,6 @@ exports.adminUpdateOrderStatus = async (req, res) => {
                 return res.status(400).json({ success: false, message: "Invalid order status" });
             }
 
-            // 2. Transition Validation
-            const allowedTransitions = {
-                pending: ["confirmed", "cancelled"],
-                confirmed: ["packed", "cancelled"],
-                packed: ["out_for_delivery", "cancelled"],
-                out_for_delivery: ["delivered"],
-                delivered: [],
-                cancelled: []
-            };
-
-            if (!allowedTransitions[oldOrder.orderStatus].includes(orderStatus)) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `Cannot transition order status from ${oldOrder.orderStatus} to ${orderStatus}.` 
-                });
-            }
-
             updateData.orderStatus = orderStatus;
 
             // Auto-update COD to paid if delivered

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const User = require('../models/User');
 const { createNotification, notifyAdmins } = require('./notificationController');
 
 const DELIVERY_FEE = 50;
@@ -201,24 +202,28 @@ exports.verifyRazorpayPayment = async (req, res) => {
         // Notifications
         const shortId = `NK-${order._id.toString().slice(-4).toUpperCase()}`;
         
-        await createNotification(
-            req.user.userId,
-            'order_placed',
-            'Order Placed Successfully',
-            `Your online order #${shortId} has been confirmed.`,
-            { orderId: order._id }
-        );
+        createNotification({
+            recipient: req.user.userId,
+            recipientRole: 'customer',
+            type: 'order_placed',
+            title: 'Order Confirmed',
+            message: `Your online payment for order #${shortId} was successful and your order has been placed.`,
+            order: order._id
+        });
 
-        await notifyAdmins(
-            'new_order',
-            'New Online Order Received',
-            `A new online order #${shortId} has been placed.`,
-            { orderId: order._id }
-        );
+        // Get customer name for admin notification
+        const customerUser = await User.findById(req.user.userId).select('name');
+        
+        notifyAdmins({
+            type: 'order_placed',
+            title: 'New Order Received',
+            message: `New online order #${shortId} has been placed by ${customerUser?.name || 'a customer'}.`,
+            order: order._id
+        });
 
         // Process stock alerts
         for (const alert of stockAlerts) {
-            await notifyAdmins(alert.type, alert.title, alert.message, alert.metadata);
+            notifyAdmins(alert);
         }
 
         res.status(201).json({
