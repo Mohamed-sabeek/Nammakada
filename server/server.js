@@ -1,4 +1,32 @@
 require('dotenv').config();
+
+// Razorpay Environment Safety Check
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID || '';
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+if (nodeEnv === 'development') {
+    if (razorpayKeyId.startsWith('rzp_live_')) {
+        console.error('====================================================');
+        console.error('FATAL ERROR: Using LIVE Razorpay credentials in development environment!');
+        console.error('Safety abort triggered. Please change RAZORPAY_KEY_ID to a test key.');
+        console.error('====================================================');
+        process.exit(1);
+    }
+    if (razorpayKeyId.startsWith('rzp_test_')) {
+        console.log('🛡️  Razorpay Environment: TEST');
+    }
+} else if (nodeEnv === 'production') {
+    if (razorpayKeyId.startsWith('rzp_test_')) {
+        console.error('====================================================');
+        console.error('FATAL ERROR: Using TEST Razorpay credentials in production environment!');
+        console.error('Safety abort triggered. Please change RAZORPAY_KEY_ID to a live key.');
+        console.error('====================================================');
+        process.exit(1);
+    }
+    if (razorpayKeyId.startsWith('rzp_live_')) {
+        console.log('⚠️  Razorpay Environment: LIVE');
+    }
+}
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -18,8 +46,17 @@ connectDB();
 
 // Middleware
 app.use(express.json());
+const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(url => url.trim()) : ['http://localhost:5173'];
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
